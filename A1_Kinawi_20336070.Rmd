@@ -1,0 +1,76 @@
+---
+title: "Assigmnet 1"
+Author: "Salma Kinawi"
+output: html_document
+date: "2025-09-02"
+---
+
+[Project GitHub repository] https://github.com/salmakinawi/BIOL432_Assignment1
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#load libraries
+library(tidyverse)
+```
+
+```{r}
+
+source("dataGenerato.R")
+source("volumeEstimato.R")
+```
+```{r}
+data<-read_csv("data.csv") #load data
+
+#sort data using dplyr by species
+
+sort_data <- data %>%
+  arrange(Organism,Observer,Volume)
+
+head(sort_data, 20) # view sorted data 
+
+```
+
+```{r}
+# table of the data by organism and agerage volume
+avg_species<-data %>%
+  group_by(Organism) %>%
+  summarise(
+    mean_volume= mean(Volume, na.rm=TRUE), 
+    #summarzing with a meanvolume column and not adding any missing values
+    
+  )%>%
+  arrange(mean_volume)
+
+avg_species
+```
+
+```{r}
+#the counts of each organism but each observer 
+counts<- data %>%
+  count(Organism, Observer, name= "counts") 
+counts
+```
+
+```{r}
+
+library(ggplot2) #download library
+#create boxplot using ggplot
+ggplot(data, aes(x=Organism, y= Volume)) + 
+  geom_boxplot() +
+  labs(title="Limb Volume by Species", 
+       x="Species",y="Volume") +
+  theme_minimal()
+```
+```{r}
+#create the multipanel historgrams of volume distributions per species
+ggplot(data, aes(x = Volume)) + #using data and put volume on x-axis
+  geom_histogram(bins = 25) +
+  facet_wrap(~ Organism, scales = "free_y") +
+  labs(title = "Distribution of Limb Volume by Species",
+       x = "Volume", y = "Frequency") +
+  theme_minimal() 
+```
+
